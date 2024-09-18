@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Identity : MonoBehaviour
 {
+    [Header("Enemy ID")]
     public int ID;
 
+    [Header("Damage")]
     public float damageInterval = 0.5f;
-    [SerializeField] private float damageTimer;
+    private float damageTimer;
     public float damage;
 
     private bool triggerCheck = false;

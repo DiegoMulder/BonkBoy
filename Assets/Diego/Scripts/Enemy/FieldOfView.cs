@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class FieldOfView : MonoBehaviour
 {
+    [Header("FOV")]
     public float radius;
-
     public float angle;
 
+    [Header("Interaction layers")]
     [SerializeField] private LayerMask targetMask;
     [SerializeField] private LayerMask obstructionMask;
 
