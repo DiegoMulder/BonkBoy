@@ -5,17 +5,17 @@ using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
-	private float movementSpeed, distance, idleTimer_Script = 3;
-	public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3;
+	private float movementSpeed, idleTimer_Script = 3;
+	public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100;
 
 	[SerializeField] private float walkingRange = 50;
 
 	[SerializeField] private NavMeshAgent agent;
-	private Animator enemyAnimator;
+	public Animator enemyAnimator;
 
 	[SerializeField] private EnemyState currentState;
 	[SerializeField] private Transform player;
-	public bool isRunning;
+	public bool isRunning, hasHP = false;
 
 	private bool pullRandomPath = true;
 
@@ -30,6 +30,12 @@ public class Enemy : MonoBehaviour
 	{
 		EnemyBehaviour();
 		MovementLogic();
+		if(hasHP) HPBehaviour();
+	}
+
+	private void HPBehaviour()
+	{
+		if(enemyHP <= 0) Destroy(gameObject);
 	}
 
 	private void EnemyBehaviour()
