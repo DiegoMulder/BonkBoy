@@ -6,7 +6,7 @@ using System.Collections;
 public class Enemy : MonoBehaviour
 {
 	private float movementSpeed, idleTimer_Script = 3;
-	public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100;
+	public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100, stoppingDistance = 0.5f;
 
 	[SerializeField] private float walkingRange = 50;
 
@@ -90,6 +90,7 @@ public class Enemy : MonoBehaviour
 
 		if(FieldOfView.canSeePlayer == false)
 		{
+			agent.stoppingDistance = 0;
 			currentState = EnemyState.Passive;
 			isRunning = false;
 		}
@@ -101,6 +102,7 @@ public class Enemy : MonoBehaviour
 
 		if (FieldOfView.canSeePlayer == true)
 		{
+			agent.stoppingDistance = stoppingDistance;
 			currentState = EnemyState.Chase;
 			isRunning = true;
 		}
