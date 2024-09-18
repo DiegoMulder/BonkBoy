@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1044120052840990357}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.97, y: 0.4, z: 2.41}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
@@ -146,11 +146,15 @@ MonoBehaviour:
   editor_RunSpeed: 1
   maxDistance: 5
   idleTimer: 2
+  enemyHP: 100
+  stoppingDistance: 0.5
   walkingRange: 10
   agent: {fileID: 7911542347184967931}
+  enemyAnimator: {fileID: 0}
   currentState: 0
   player: {fileID: 0}
   isRunning: 0
+  hasHP: 0
 --- !u!136 &1551804520128506672
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -293,6 +297,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
-  damageInterval: 0.5
-  damageTimer: 0
-  damage: 10
+  damageInterval: 0.3
+  damage: 5
