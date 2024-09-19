@@ -4,18 +4,32 @@ using UnityEngine;
 
 public class HandGrabVisual : MonoBehaviour
 {
-    public GameObject handOpen;
-    public GameObject handClosed;
+    public GameObject handOpenLeft;
+    public GameObject handClosedLeft;
+    public GameObject handOpenRight;
+    public GameObject handClosedRight;
 
-    public void GrabObject()
+    public void GrabObjectLeft()
     {
-        handOpen.SetActive(false);
-        handClosed.SetActive(true);
+        handOpenLeft.SetActive(false);
+        handClosedLeft.SetActive(true);
     }
 
-    public void LetGoObject()
+    public void LetGoObjectLeft()
     {
-        handOpen.SetActive(true);
-        handClosed.SetActive(false);
+        handOpenLeft.SetActive(true);
+        handClosedLeft.SetActive(false);
+    }
+
+    public void GrabObjectRight()
+    {
+        handOpenRight.SetActive(false);
+        handClosedRight.SetActive(true);
+    }
+
+    public void LetGoObjectRight()
+    {
+        handOpenRight.SetActive(true);
+        handClosedRight.SetActive(false);
     }
 }
