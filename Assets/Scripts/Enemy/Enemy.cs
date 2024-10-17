@@ -1,41 +1,60 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
-    private float movementSpeed, idleTimer_Script = 3;
-    public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100, stoppingDistance = 0.5f;
-
+    private float movementSpeed, idleTimer_Script = 3, enemyAttackRange, script_DefendTimer = 3;
+    public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100, stoppingDistance = 0.5f, editor_DefendTimer = 3;
+    public float despawnTimer = 5;
     [SerializeField] private float walkingRange = 50;
+    [SerializeField] private float turnSpeed = 5f; // Snelheid van draaien richting de speler
 
     [SerializeField] private NavMeshAgent agent;
     public Animator enemyAnimator;
 
     [SerializeField] private EnemyState currentState;
     [SerializeField] private Transform player;
-    public bool isRunning, hasHP = false;
+    public bool isRunning, isHitted = false;
+    public static bool hasDied = false;
 
     private bool pullRandomPath = true;
 
     private void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
         idleTimer_Script = idleTimer;
         pullRandomPath = true;
         currentState = EnemyState.Passive;
+        hasDied = false;
+        isHitted = false;
     }
 
     private void Update()
     {
-        EnemyBehaviour();
-        MovementLogic();
-        if (hasHP) HPBehaviour();
+        if (!hasDied)
+        {
+            EnemyBehaviour();
+            MovementLogic();
+        }
+        HPBehaviour();
     }
 
     private void HPBehaviour()
     {
-        if(enemyHP <= 0) Destroy(gameObject);
+        if (enemyHP <= 0)
+        {
+            hasDied = true;
+            if (Identity.ID_Static == 0) Destroy(gameObject);
+            else if (Identity.ID_Static == 1)
+            {
+                agent.enabled = false;
+                enemyAnimator.enabled = false;
+                GetComponent<Rigidbody>().isKinematic = false;
+                despawnTimer -= Time.deltaTime;
+                if (despawnTimer <= 0) Destroy(gameObject);
+            }
+        }
     }
 
     private void EnemyBehaviour()
@@ -58,7 +77,7 @@ public class Enemy : MonoBehaviour
 
     private void PassiveState()
     {
-        if (agent.hasPath == false)
+        if (!agent.hasPath)
         {
             if (pullRandomPath)
             {
@@ -72,7 +91,6 @@ public class Enemy : MonoBehaviour
                 {
                     pullRandomPath = true;
                     idleTimer_Script = idleTimer;
-                    return;
                 }
             }
         }
@@ -80,15 +98,18 @@ public class Enemy : MonoBehaviour
 
     private void RoamingBehaviour()
     {
-        if (agent.hasPath == false) agent.SetDestination(RandomPosition());
-        else currentState = EnemyState.Passive;
+        if (!agent.hasPath)
+            agent.SetDestination(RandomPosition());
+        else
+            currentState = EnemyState.Passive;
     }
 
     private void ChaseBehaviour()
     {
+        enemyAttackRange = Vector3.Distance(agent.transform.position, player.position);
         agent.SetDestination(player.transform.position);
 
-        if (FieldOfView.canSeePlayer == false)
+        if (!FieldOfView.canSeePlayer && enemyAttackRange > stoppingDistance)
         {
             agent.stoppingDistance = 0;
             currentState = EnemyState.Passive;
@@ -98,18 +119,61 @@ public class Enemy : MonoBehaviour
 
     private void MovementLogic()
     {
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetFloat("velocity", agent.velocity.magnitude);
+
+            if (enemyAttackRange < stoppingDistance && isRunning)
+            {
+                enemyAnimator.SetBool("isAttacking", true);
+                SmoothRotateTowards(player.position);
+
+                if (isHitted)
+                {
+                    enemyAnimator.SetBool("isDefending", true);
+                    script_DefendTimer -= Time.deltaTime;
+                    if (script_DefendTimer <= 0)
+                    {
+                        enemyAnimator.SetBool("isDefending", false);
+                        script_DefendTimer = editor_DefendTimer;
+                        isHitted = false;
+                    }
+                }
+            }
+            else
+            {
+                enemyAnimator.SetBool("isAttacking", false);
+                if (isHitted)
+                {
+                    enemyAnimator.SetBool("isDefending", false);
+                    script_DefendTimer = editor_DefendTimer;
+                    isHitted = false;
+                }
+            }
+        }
+
         agent.speed = movementSpeed;
 
-        if (FieldOfView.canSeePlayer == true)
+        if (FieldOfView.canSeePlayer)
         {
             agent.stoppingDistance = stoppingDistance;
             currentState = EnemyState.Chase;
             isRunning = true;
         }
 
-        if (isRunning) movementSpeed = editor_RunSpeed;
-        else if (!isRunning && agent.hasPath == true) movementSpeed = editor_WalkSpeed;
-        else if (!isRunning && agent.hasPath == false) agent.speed = 0;
+        if (isRunning)
+            movementSpeed = editor_RunSpeed;
+        else if (!isRunning && agent.hasPath)
+            movementSpeed = editor_WalkSpeed;
+        else if (!isRunning && !agent.hasPath)
+            agent.speed = 0;
+    }
+
+    private void SmoothRotateTowards(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * turnSpeed);
     }
 
     private Vector3 RandomPosition()

@@ -8,6 +8,12 @@ public class Identity : MonoBehaviour
     public int ID;
     public static int ID_Static;
 
+    [Header("Weapon physics")]
+    public Rigidbody rb;
+    private Vector3 lastPosition;
+    private Vector3 currentVelocity;
+    private bool hittedPlayer = false;
+
     [Header("Damage")]
     public float damageInterval = 0.5f;
     private float damageTimer;
@@ -23,39 +29,53 @@ public class Identity : MonoBehaviour
         triggerCheck = false;
         damageTimer = 0;
         static_Damage = damage;
+        lastPosition = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
         ID_Static = ID;
+        currentVelocity = (transform.position - lastPosition) / Time.deltaTime;
+        lastPosition = transform.position;
 
         if (ID == 0) RoombaSawBehaviour();
+        if (ID == 1 && !Enemy.hasDied) SkeletonEnemy();
     }
 
-    //Damage behaviour
     private void RoombaSawBehaviour()
-	{
-		if (triggerCheck)
-		{
+    {
+        if (triggerCheck)
+        {
             damageTimer += Time.deltaTime;
-            if(damageTimer >= damageInterval)
-			{
+            if (damageTimer >= damageInterval)
+            {
                 didDamage = true;
                 damageTimer = 0;
-			}
-		}
+            }
+        }
         else damageTimer = 0;
-	}
+    }
 
-    //Check als hij de speler raakt
-	private void OnTriggerEnter(Collider other)
-	{
-		if (other.gameObject.CompareTag("Player")) triggerCheck = true;
-	}
+    private void SkeletonEnemy()
+    {
+        if (currentVelocity.magnitude >= 5f && triggerCheck && !hittedPlayer)
+        {
+            didDamage = true;
+            hittedPlayer = true;
+        }
 
-	private void OnTriggerExit(Collider other)
-	{
+        if (!triggerCheck && hittedPlayer)
+            hittedPlayer = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player")) triggerCheck = true;
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
         if (other.gameObject.CompareTag("Player")) triggerCheck = false;
     }
 }
