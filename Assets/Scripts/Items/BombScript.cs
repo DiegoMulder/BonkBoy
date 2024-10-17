@@ -9,6 +9,7 @@ public class BombScript : MonoBehaviour
     [SerializeField] float blastRadius = 5f;
     [SerializeField] float explosionForce = 500f;
     [SerializeField] bool hasExploded = false;
+    [SerializeField] float damage = 100;
     [SerializeField] GameObject particleEffect;
     void Start()
     {
@@ -29,15 +30,22 @@ public class BombScript : MonoBehaviour
         Instantiate(particleEffect, transform.position, transform.rotation);
 
         Collider[] colliders = Physics.OverlapSphere(transform.position, blastRadius);
-        foreach(Collider nearbyObj in colliders)
+        bool damageApplied = false;
+        foreach (Collider nearbyObj in colliders)
         {
             Rigidbody rb = nearbyObj.GetComponent<Rigidbody>();
-            if(rb != null)
+            if (rb != null)
             {
+                Debug.Log("boom");
                 rb.AddExplosionForce(explosionForce, transform.position, blastRadius);
+
+                if (!damageApplied)
+                {
+                    Enemy.enemyHP_Static -= damage;
+                    damageApplied = true;
+                }
             }
         }
-
         Destroy(gameObject);
     }
 }
