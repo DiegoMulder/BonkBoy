@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
 
     private void HPBehaviour()
     {
-        if (enemyHP <= 0)
+        if (enemyHP_Static <= 0)
         {
             hasDied = true;
             DisablePhysicsDrivenAnimation();
