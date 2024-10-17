@@ -47,7 +47,10 @@ public class Enemy : MonoBehaviour
         if (enemyHP_Static <= 0)
         {
             hasDied = true;
-            if (Identity.ID_Static == 0) Destroy(gameObject);
+            DisablePhysicsDrivenAnimation();
+
+            if (Identity.ID_Static == 0)
+                Destroy(gameObject);
             else if (Identity.ID_Static == 1)
             {
                 agent.enabled = false;
@@ -56,6 +59,24 @@ public class Enemy : MonoBehaviour
                 despawnTimer -= Time.deltaTime;
                 if (despawnTimer <= 0) Destroy(gameObject);
             }
+        }
+    }
+
+    // Method to disable PhysicsDrivenAnimation on the GameObject and its children
+    private void DisablePhysicsDrivenAnimation()
+    {
+        // Disable on the main GameObject
+        PhysicsDrivenAnimation physicsDrivenAnimation = GetComponent<PhysicsDrivenAnimation>();
+        if (physicsDrivenAnimation != null)
+        {
+            physicsDrivenAnimation.enabled = false;
+        }
+
+        // Disable on all children GameObjects
+        PhysicsDrivenAnimation[] childPhysicsDrivenAnimations = GetComponentsInChildren<PhysicsDrivenAnimation>();
+        foreach (PhysicsDrivenAnimation childAnimation in childPhysicsDrivenAnimations)
+        {
+            childAnimation.enabled = false;
         }
     }
 

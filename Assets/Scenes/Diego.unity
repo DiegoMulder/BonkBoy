@@ -719,21 +719,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: KnightEnemy
       objectReference: {fileID: 0}
-    - target: {fileID: 5432292138906353233, guid: d86382881f079a248b8ecba00fa5b0e8,
-        type: 3}
-      propertyPath: m_Swing2Limit.limit
-      value: 35
-      objectReference: {fileID: 0}
-    - target: {fileID: 7742107837185167606, guid: d86382881f079a248b8ecba00fa5b0e8,
-        type: 3}
-      propertyPath: m_Height
-      value: 0.36
-      objectReference: {fileID: 0}
-    - target: {fileID: 7742107837185167606, guid: d86382881f079a248b8ecba00fa5b0e8,
-        type: 3}
-      propertyPath: m_Center.y
-      value: 0.18
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
