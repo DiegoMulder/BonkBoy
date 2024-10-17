@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
 
     private void HPBehaviour()
     {
-        if (enemyHP_Static <= 0)
+        if (enemyHP <= 0)
         {
             hasDied = true;
             DisablePhysicsDrivenAnimation();
@@ -55,7 +55,7 @@ public class Enemy : MonoBehaviour
             {
                 agent.enabled = false;
                 enemyAnimator.enabled = false;
-                GetComponent<Rigidbody>().isKinematic = false;
+                //GetComponent<Rigidbody>().isKinematic = false;
                 despawnTimer -= Time.deltaTime;
                 if (despawnTimer <= 0) Destroy(gameObject);
             }
