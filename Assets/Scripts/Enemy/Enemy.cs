@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
 {
     private float movementSpeed, idleTimer_Script = 3, enemyAttackRange, script_DefendTimer = 3;
     public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100, stoppingDistance = 0.5f, editor_DefendTimer = 3;
+    public static float enemyHP_Static;
     public float despawnTimer = 5;
     [SerializeField] private float walkingRange = 50;
     [SerializeField] private float turnSpeed = 5f; // Snelheid van draaien richting de speler
@@ -28,6 +29,7 @@ public class Enemy : MonoBehaviour
         currentState = EnemyState.Passive;
         hasDied = false;
         isHitted = false;
+        enemyHP_Static = enemyHP;
     }
 
     private void Update()
@@ -42,7 +44,7 @@ public class Enemy : MonoBehaviour
 
     private void HPBehaviour()
     {
-        if (enemyHP <= 0)
+        if (enemyHP_Static <= 0)
         {
             hasDied = true;
             if (Identity.ID_Static == 0) Destroy(gameObject);
