@@ -1,132 +1,196 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
-	private float movementSpeed, idleTimer_Script = 3;
-	public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100, stoppingDistance = 0.5f;
+    private float movementSpeed, idleTimer_Script = 3, enemyAttackRange, script_DefendTimer = 3;
+    public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100, stoppingDistance = 0.5f, editor_DefendTimer = 3;
+    public float despawnTimer = 5;
+    [SerializeField] private float walkingRange = 50;
+    [SerializeField] private float turnSpeed = 5f; // Snelheid van draaien richting de speler
 
-	[SerializeField] private float walkingRange = 50;
+    [SerializeField] private NavMeshAgent agent;
+    public Animator enemyAnimator;
 
-	[SerializeField] private NavMeshAgent agent;
-	public Animator enemyAnimator;
+    [SerializeField] private EnemyState currentState;
+    [SerializeField] private Transform player;
+    public bool isRunning, isHitted = false;
+    public static bool hasDied = false;
 
-	[SerializeField] private EnemyState currentState;
-	[SerializeField] private Transform player;
-	public bool isRunning, hasHP = false;
+    private bool pullRandomPath = true;
 
-	private bool pullRandomPath = true;
+    private void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        idleTimer_Script = idleTimer;
+        pullRandomPath = true;
+        currentState = EnemyState.Passive;
+        hasDied = false;
+        isHitted = false;
+    }
 
-	private void Start()
-	{
-		idleTimer_Script = idleTimer;
-		pullRandomPath = true;
-		currentState = EnemyState.Passive;
-	}
+    private void Update()
+    {
+        if (!hasDied)
+        {
+            EnemyBehaviour();
+            MovementLogic();
+        }
+        HPBehaviour();
+    }
 
-	private void Update()
-	{
-		EnemyBehaviour();
-		MovementLogic();
-		if(hasHP) HPBehaviour();
-	}
+    private void HPBehaviour()
+    {
+        if (enemyHP <= 0)
+        {
+            hasDied = true;
+            if (Identity.ID_Static == 0) Destroy(gameObject);
+            else if (Identity.ID_Static == 1)
+            {
+                agent.enabled = false;
+                enemyAnimator.enabled = false;
+                GetComponent<Rigidbody>().isKinematic = false;
+                despawnTimer -= Time.deltaTime;
+                if (despawnTimer <= 0) Destroy(gameObject);
+            }
+        }
+    }
 
-	private void HPBehaviour()
-	{
-		if(enemyHP <= 0) Destroy(gameObject);
-	}
+    private void EnemyBehaviour()
+    {
+        switch (currentState)
+        {
+            case EnemyState.Passive:
+                PassiveState();
+                break;
+            case EnemyState.Roaming:
+                RoamingBehaviour();
+                break;
+            case EnemyState.Chase:
+                ChaseBehaviour();
+                break;
+            default:
+                break;
+        }
+    }
 
-	private void EnemyBehaviour()
-	{
-		switch (currentState)
-		{
-			case EnemyState.Passive:
-				PassiveState();
-				break;
-			case EnemyState.Roaming:
-				RoamingBehaviour();
-				break;
-			case EnemyState.Chase:
-				ChaseBehaviour();
-				break;
-			default:
-				break;
-		}
-	}
+    private void PassiveState()
+    {
+        if (!agent.hasPath)
+        {
+            if (pullRandomPath)
+            {
+                currentState = EnemyState.Roaming;
+                pullRandomPath = false;
+            }
+            else
+            {
+                idleTimer_Script -= Time.deltaTime;
+                if (idleTimer_Script <= 0)
+                {
+                    pullRandomPath = true;
+                    idleTimer_Script = idleTimer;
+                }
+            }
+        }
+    }
 
-	private void PassiveState()
-	{
-		if (agent.hasPath == false)
-		{
-			if (pullRandomPath)
-			{
-				currentState = EnemyState.Roaming;
-				pullRandomPath = false;
-			}
-			else
-			{
-				idleTimer_Script -= Time.deltaTime;
-				if (idleTimer_Script <= 0)
-				{
-					pullRandomPath = true;
-					idleTimer_Script = idleTimer;
-					return;
-				}
-			}
-		}
-	}
+    private void RoamingBehaviour()
+    {
+        if (!agent.hasPath)
+            agent.SetDestination(RandomPosition());
+        else
+            currentState = EnemyState.Passive;
+    }
 
-	private void RoamingBehaviour()
-	{
-		if (agent.hasPath == false) agent.SetDestination(RandomPosition());
-		else currentState = EnemyState.Passive;
-	}
+    private void ChaseBehaviour()
+    {
+        enemyAttackRange = Vector3.Distance(agent.transform.position, player.position);
+        agent.SetDestination(player.transform.position);
 
-	private void ChaseBehaviour()
-	{
-		agent.SetDestination(player.transform.position);
+        if (!FieldOfView.canSeePlayer && enemyAttackRange > stoppingDistance)
+        {
+            agent.stoppingDistance = 0;
+            currentState = EnemyState.Passive;
+            isRunning = false;
+        }
+    }
 
-		if(FieldOfView.canSeePlayer == false)
-		{
-			agent.stoppingDistance = 0;
-			currentState = EnemyState.Passive;
-			isRunning = false;
-		}
-	}
+    private void MovementLogic()
+    {
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetFloat("velocity", agent.velocity.magnitude);
 
-	private void MovementLogic()
-	{
-		agent.speed = movementSpeed;
+            if (enemyAttackRange < stoppingDistance && isRunning)
+            {
+                enemyAnimator.SetBool("isAttacking", true);
+                SmoothRotateTowards(player.position);
 
-		if (FieldOfView.canSeePlayer == true)
-		{
-			agent.stoppingDistance = stoppingDistance;
-			currentState = EnemyState.Chase;
-			isRunning = true;
-		}
+                if (isHitted)
+                {
+                    enemyAnimator.SetBool("isDefending", true);
+                    script_DefendTimer -= Time.deltaTime;
+                    if (script_DefendTimer <= 0)
+                    {
+                        enemyAnimator.SetBool("isDefending", false);
+                        script_DefendTimer = editor_DefendTimer;
+                        isHitted = false;
+                    }
+                }
+            }
+            else
+            {
+                enemyAnimator.SetBool("isAttacking", false);
+                if (isHitted)
+                {
+                    enemyAnimator.SetBool("isDefending", false);
+                    script_DefendTimer = editor_DefendTimer;
+                    isHitted = false;
+                }
+            }
+        }
 
-		if (isRunning) movementSpeed = editor_RunSpeed;
-		else if (!isRunning && agent.hasPath == true) movementSpeed = editor_WalkSpeed;
-		else if(!isRunning && agent.hasPath == false) agent.speed = 0;
-	}
+        agent.speed = movementSpeed;
 
-	private Vector3 RandomPosition()
-	{
-		Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * walkingRange;
-		randomDirection += transform.position;
+        if (FieldOfView.canSeePlayer)
+        {
+            agent.stoppingDistance = stoppingDistance;
+            currentState = EnemyState.Chase;
+            isRunning = true;
+        }
 
-		NavMeshHit hit;
-		NavMesh.SamplePosition(randomDirection, out hit, walkingRange, NavMesh.AllAreas);
+        if (isRunning)
+            movementSpeed = editor_RunSpeed;
+        else if (!isRunning && agent.hasPath)
+            movementSpeed = editor_WalkSpeed;
+        else if (!isRunning && !agent.hasPath)
+            agent.speed = 0;
+    }
 
-		return hit.position;
-	}
+    private void SmoothRotateTowards(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * turnSpeed);
+    }
 
-	private enum EnemyState
-	{
-		Passive,
-		Roaming,
-		Chase
-	}
+    private Vector3 RandomPosition()
+    {
+        Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * walkingRange;
+        randomDirection += transform.position;
+
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randomDirection, out hit, walkingRange, NavMesh.AllAreas);
+
+        return hit.position;
+    }
+
+    private enum EnemyState
+    {
+        Passive,
+        Roaming,
+        Chase
+    }
 }
