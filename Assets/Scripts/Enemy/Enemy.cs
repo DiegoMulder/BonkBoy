@@ -5,128 +5,128 @@ using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
-	private float movementSpeed, idleTimer_Script = 3;
-	public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100, stoppingDistance = 0.5f;
+    private float movementSpeed, idleTimer_Script = 3;
+    public float editor_WalkSpeed = 1f, editor_RunSpeed = 2f, maxDistance = 5, idleTimer = 3, enemyHP = 100, stoppingDistance = 0.5f;
 
-	[SerializeField] private float walkingRange = 50;
+    [SerializeField] private float walkingRange = 50;
 
-	[SerializeField] private NavMeshAgent agent;
-	public Animator enemyAnimator;
+    [SerializeField] private NavMeshAgent agent;
+    public Animator enemyAnimator;
 
-	[SerializeField] private EnemyState currentState;
-	[SerializeField] private Transform player;
-	public bool isRunning, hasHP = false;
+    [SerializeField] private EnemyState currentState;
+    [SerializeField] private Transform player;
+    public bool isRunning, hasHP = false;
 
-	private bool pullRandomPath = true;
+    private bool pullRandomPath = true;
 
-	private void Start()
-	{
-		idleTimer_Script = idleTimer;
-		pullRandomPath = true;
-		currentState = EnemyState.Passive;
-	}
+    private void Start()
+    {
+        idleTimer_Script = idleTimer;
+        pullRandomPath = true;
+        currentState = EnemyState.Passive;
+    }
 
-	private void Update()
-	{
-		EnemyBehaviour();
-		MovementLogic();
-		if(hasHP) HPBehaviour();
-	}
+    private void Update()
+    {
+        EnemyBehaviour();
+        MovementLogic();
+        if (hasHP) HPBehaviour();
+    }
 
-	private void HPBehaviour()
-	{
-		if(enemyHP <= 0) Destroy(gameObject);
-	}
+    private void HPBehaviour()
+    {
+        if(enemyHP <= 0) Destroy(gameObject);
+    }
 
-	private void EnemyBehaviour()
-	{
-		switch (currentState)
-		{
-			case EnemyState.Passive:
-				PassiveState();
-				break;
-			case EnemyState.Roaming:
-				RoamingBehaviour();
-				break;
-			case EnemyState.Chase:
-				ChaseBehaviour();
-				break;
-			default:
-				break;
-		}
-	}
+    private void EnemyBehaviour()
+    {
+        switch (currentState)
+        {
+            case EnemyState.Passive:
+                PassiveState();
+                break;
+            case EnemyState.Roaming:
+                RoamingBehaviour();
+                break;
+            case EnemyState.Chase:
+                ChaseBehaviour();
+                break;
+            default:
+                break;
+        }
+    }
 
-	private void PassiveState()
-	{
-		if (agent.hasPath == false)
-		{
-			if (pullRandomPath)
-			{
-				currentState = EnemyState.Roaming;
-				pullRandomPath = false;
-			}
-			else
-			{
-				idleTimer_Script -= Time.deltaTime;
-				if (idleTimer_Script <= 0)
-				{
-					pullRandomPath = true;
-					idleTimer_Script = idleTimer;
-					return;
-				}
-			}
-		}
-	}
+    private void PassiveState()
+    {
+        if (agent.hasPath == false)
+        {
+            if (pullRandomPath)
+            {
+                currentState = EnemyState.Roaming;
+                pullRandomPath = false;
+            }
+            else
+            {
+                idleTimer_Script -= Time.deltaTime;
+                if (idleTimer_Script <= 0)
+                {
+                    pullRandomPath = true;
+                    idleTimer_Script = idleTimer;
+                    return;
+                }
+            }
+        }
+    }
 
-	private void RoamingBehaviour()
-	{
-		if (agent.hasPath == false) agent.SetDestination(RandomPosition());
-		else currentState = EnemyState.Passive;
-	}
+    private void RoamingBehaviour()
+    {
+        if (agent.hasPath == false) agent.SetDestination(RandomPosition());
+        else currentState = EnemyState.Passive;
+    }
 
-	private void ChaseBehaviour()
-	{
-		agent.SetDestination(player.transform.position);
+    private void ChaseBehaviour()
+    {
+        agent.SetDestination(player.transform.position);
 
-		if(FieldOfView.canSeePlayer == false)
-		{
-			agent.stoppingDistance = 0;
-			currentState = EnemyState.Passive;
-			isRunning = false;
-		}
-	}
+        if (FieldOfView.canSeePlayer == false)
+        {
+            agent.stoppingDistance = 0;
+            currentState = EnemyState.Passive;
+            isRunning = false;
+        }
+    }
 
-	private void MovementLogic()
-	{
-		agent.speed = movementSpeed;
+    private void MovementLogic()
+    {
+        agent.speed = movementSpeed;
 
-		if (FieldOfView.canSeePlayer == true)
-		{
-			agent.stoppingDistance = stoppingDistance;
-			currentState = EnemyState.Chase;
-			isRunning = true;
-		}
+        if (FieldOfView.canSeePlayer == true)
+        {
+            agent.stoppingDistance = stoppingDistance;
+            currentState = EnemyState.Chase;
+            isRunning = true;
+        }
 
-		if (isRunning) movementSpeed = editor_RunSpeed;
-		else if (!isRunning && agent.hasPath == true) movementSpeed = editor_WalkSpeed;
-		else if(!isRunning && agent.hasPath == false) agent.speed = 0;
-	}
+        if (isRunning) movementSpeed = editor_RunSpeed;
+        else if (!isRunning && agent.hasPath == true) movementSpeed = editor_WalkSpeed;
+        else if (!isRunning && agent.hasPath == false) agent.speed = 0;
+    }
 
-	private Vector3 RandomPosition()
-	{
-		Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * walkingRange;
-		randomDirection += transform.position;
+    private Vector3 RandomPosition()
+    {
+        Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * walkingRange;
+        randomDirection += transform.position;
 
-		NavMeshHit hit;
-		NavMesh.SamplePosition(randomDirection, out hit, walkingRange, NavMesh.AllAreas);
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randomDirection, out hit, walkingRange, NavMesh.AllAreas);
 
-		return hit.position;
-	}
+        return hit.position;
+    }
 
-	private enum EnemyState
-	{
-		Passive,
-		Roaming,
-		Chase
-	}
+    private enum EnemyState
+    {
+        Passive,
+        Roaming,
+        Chase
+    }
 }

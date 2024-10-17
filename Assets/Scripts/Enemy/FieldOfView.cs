@@ -20,6 +20,7 @@ public class FieldOfView : MonoBehaviour
         StartCoroutine(FOVRoutine());
     }
 
+    //Update FOV functie
     private IEnumerator FOVRoutine()
     {
         WaitForSeconds wait = new WaitForSeconds(0.2f);
@@ -31,6 +32,7 @@ public class FieldOfView : MonoBehaviour
         }
     }
 
+    //FOV functie
     private void FieldOfViewCheck()
     {
         Collider[] rangeChecks = Physics.OverlapSphere(transform.position, radius, targetMask);
