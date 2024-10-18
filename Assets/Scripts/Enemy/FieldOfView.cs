@@ -13,7 +13,7 @@ public class FieldOfView : MonoBehaviour
     [SerializeField] private LayerMask targetMask;
     [SerializeField] private LayerMask obstructionMask;
 
-    public static bool canSeePlayer;
+    public bool canSeePlayer;
     // Start is called before the first frame update
     void Start()
     {

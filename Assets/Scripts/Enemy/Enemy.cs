@@ -21,6 +21,7 @@ public class Enemy : MonoBehaviour
 
     private bool pullRandomPath = true;
 
+    FieldOfView script_FOV;
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -30,6 +31,7 @@ public class Enemy : MonoBehaviour
         hasDied = false;
         isHitted = false;
         enemyHP_Static = enemyHP;
+        script_FOV = gameObject.GetComponent<FieldOfView>();
     }
 
     private void Update()
@@ -132,7 +134,7 @@ public class Enemy : MonoBehaviour
         enemyAttackRange = Vector3.Distance(agent.transform.position, player.position);
         agent.SetDestination(player.transform.position);
 
-        if (!FieldOfView.canSeePlayer && enemyAttackRange > stoppingDistance)
+        if (!script_FOV.canSeePlayer && enemyAttackRange > stoppingDistance)
         {
             agent.stoppingDistance = 0;
             currentState = EnemyState.Passive;
@@ -177,7 +179,7 @@ public class Enemy : MonoBehaviour
 
         agent.speed = movementSpeed;
 
-        if (FieldOfView.canSeePlayer)
+        if (script_FOV.canSeePlayer)
         {
             agent.stoppingDistance = stoppingDistance;
             currentState = EnemyState.Chase;
