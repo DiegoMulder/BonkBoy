@@ -13,6 +13,7 @@ public class DungeonGenerator : MonoBehaviour
     }
 
     //Zet een kamer neer
+    //Zet de deuren erin
     //Ga door alle nodes van de kamer en zet soms een object neer 
     //Zet een kamer neer bij elke uitgang van de kamer
     //Ga terug naar stap 1
