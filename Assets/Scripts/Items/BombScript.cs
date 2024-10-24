@@ -30,22 +30,25 @@ public class BombScript : MonoBehaviour
         Instantiate(particleEffect, transform.position, transform.rotation);
 
         Collider[] colliders = Physics.OverlapSphere(transform.position, blastRadius);
-        bool damageApplied = false;
+
         foreach (Collider nearbyObj in colliders)
         {
             Rigidbody rb = nearbyObj.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                Debug.Log("boom");
-                rb.AddExplosionForce(explosionForce, transform.position, blastRadius);
+            Enemy enemy = nearbyObj.GetComponent<Enemy>();
 
-                if (!damageApplied)
-                {
-                    Enemy.enemyHP_Static -= damage;
-                    damageApplied = true;
-                }
+            if (rb != null && enemy != null)
+            {
+                Debug.Log("Enemy hit: " + enemy.gameObject.name);
+                rb.AddExplosionForce(explosionForce, transform.position, blastRadius);
+                enemy.TakeDamage(damage);
+            }
+            else if (rb != null)
+            {
+                rb.AddExplosionForce(explosionForce, transform.position, blastRadius);
             }
         }
+
         Destroy(gameObject);
     }
+
 }
