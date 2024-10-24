@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int playerHealth = 100;
+    public int currentHealth = 100;
+    public int maxHealth = 100;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,7 +15,18 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(playerHealth > 0) HealthBehaviour();
+        if(currentHealth >= maxHealth)  currentHealth = maxHealth;
+        if(currentHealth > 0) HealthBehaviour();
+    }
+
+    public void IncreaseMaxHealth()
+    {
+        maxHealth += 20;
+    }
+
+    public void IncreaseCurrentHealth()
+    {
+        currentHealth += 50;
     }
 
     //Player health functie
@@ -22,17 +34,17 @@ public class PlayerHealth : MonoBehaviour
 	{
         if (Identity.didDamage) DamageBehaviour();
 
-        if(playerHealth <= 0)
+        if(currentHealth <= 0)
 		{
             print("You Died!");
-            playerHealth = 0;
+            currentHealth = 0;
 		}
     }
 
     //Damage functie
     private void DamageBehaviour()
 	{
-        playerHealth -= Identity.static_Damage;
+        currentHealth -= Identity.static_Damage;
         Identity.didDamage = false;
     }
 }
