@@ -44,9 +44,18 @@ public class Enemy : MonoBehaviour
         HPBehaviour();
     }
 
+    public void TakeDamage(float damageAmount)
+    {
+        enemyHP -= damageAmount;
+        if (enemyHP <= 0)
+        {
+            HPBehaviour();
+        }
+    }
+
     private void HPBehaviour()
     {
-        if (enemyHP_Static <= 0)
+        if (enemyHP <= 0)
         {
             hasDied = true;
             DisablePhysicsDrivenAnimation();
