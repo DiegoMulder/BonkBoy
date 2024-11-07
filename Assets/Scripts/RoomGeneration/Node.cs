@@ -3,7 +3,6 @@ using UnityEngine;
 public class Node : MonoBehaviour
 {
     static int ClickCount;
-
     MeshRenderer meshRenderer;
     public Color OriginalColor;
     private void Start()
