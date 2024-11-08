@@ -53,6 +53,15 @@ public class GridManager : MonoBehaviour
                     Tile.GetComponent<MeshRenderer>().material.color = Color.black;
                 }
                 Tile.OriginalColor = Tile.GetComponent<MeshRenderer>().material.color;
+
+
+                foreach (GameObject possibleObject in currentRoom.GetComponent<ObjectGenerator>().PossibleObjects)
+                {
+                    if (Random.value < 0.2)
+                    {
+                        Instantiate(possibleObject,Tile.transform,false);
+                    }
+                }
             }
        }
        Camera.transform.position = new Vector3((float)width / 2 -0.5f, 10, (float)height / 2 - 0.5f);
