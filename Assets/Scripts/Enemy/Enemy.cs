@@ -58,12 +58,17 @@ public class Enemy : MonoBehaviour
         if (enemyHP <= 0)
         {
             hasDied = true;
-            DisablePhysicsDrivenAnimation();
 
             if (Identity.ID_Static == 0)
-                Destroy(gameObject);
+			{
+                enemyAnimator.SetTrigger("isDead");
+                agent.enabled = false;
+                despawnTimer -= Time.deltaTime;
+                if (despawnTimer <= 0) Destroy(gameObject);
+            }                
             else if (Identity.ID_Static == 1)
             {
+                DisablePhysicsDrivenAnimation();
                 agent.enabled = false;
                 enemyAnimator.enabled = false;
                 //GetComponent<Rigidbody>().isKinematic = false;
