@@ -13,6 +13,7 @@ public class HealthAmulet : MonoBehaviour
     public void HealthAmuletEquipped()
     {
         playerHealth.HealthAmuletGrab();
+        Destroy(gameObject);
     }
     void Update()
     {

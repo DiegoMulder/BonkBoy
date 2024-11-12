@@ -48,6 +48,11 @@ public class PlayerSword : MonoBehaviour
         }
     }
 
+    public void DamageAmuletGrab()
+    {
+        velocityDamageMultiplier *= 1.2f;
+    }
+
     private void Update()
     {
         List<GameObject> enemiesToRemove = new List<GameObject>();
