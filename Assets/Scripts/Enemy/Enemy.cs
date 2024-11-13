@@ -22,6 +22,9 @@ public class Enemy : MonoBehaviour
     private bool pullRandomPath = true;
 
     FieldOfView script_FOV;
+
+    public int ID;
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -59,24 +62,26 @@ public class Enemy : MonoBehaviour
         {
             hasDied = true;
 
-            if (Identity.ID_Static == 0)
-			{
+            if (ID == 0)
+            {
                 enemyAnimator.SetTrigger("isDead");
                 agent.enabled = false;
                 despawnTimer -= Time.deltaTime;
+
+                // Make sure the dissolve effect is applied to the instantiated material
                 if (despawnTimer <= 0) Destroy(gameObject);
-            }                
-            else if (Identity.ID_Static == 1)
+            }
+            else if (ID == 1)
             {
                 DisablePhysicsDrivenAnimation();
                 agent.enabled = false;
                 enemyAnimator.enabled = false;
-                //GetComponent<Rigidbody>().isKinematic = false;
                 despawnTimer -= Time.deltaTime;
                 if (despawnTimer <= 0) Destroy(gameObject);
             }
         }
     }
+
 
     // Method to disable PhysicsDrivenAnimation on the GameObject and its children
     private void DisablePhysicsDrivenAnimation()
@@ -162,7 +167,7 @@ public class Enemy : MonoBehaviour
         {
             enemyAnimator.SetFloat("velocity", agent.velocity.magnitude);
 
-            if (enemyAttackRange < stoppingDistance && isRunning)
+            if (enemyAttackRange <= stoppingDistance && isRunning)
             {
                 enemyAnimator.SetBool("isAttacking", true);
                 SmoothRotateTowards(player.position);
