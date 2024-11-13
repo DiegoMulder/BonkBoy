@@ -6,7 +6,6 @@ public class Identity : MonoBehaviour
 {
     [Header("Enemy ID")]
     public int ID;
-    public static int ID_Static;
 
     [Header("Weapon physics")]
     public Rigidbody rb;
@@ -35,7 +34,6 @@ public class Identity : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ID_Static = ID;
         currentVelocity = (transform.position - lastPosition) / Time.deltaTime;
         lastPosition = transform.position;
 
