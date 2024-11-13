@@ -1,5 +1,7 @@
 using Unity.AI.Navigation;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class GridManager : MonoBehaviour
 {
@@ -65,13 +67,17 @@ public class GridManager : MonoBehaviour
                 Tile.GetComponent<MeshRenderer>().materials = currentRoom.GetComponent<MeshRenderer>().materials;
                 Tile.GetComponent<MeshCollider>().sharedMesh = currentRoom.GetComponent<MeshCollider>().sharedMesh;
                 
-
+                
                 Tile.transform.localScale = Vector3.one * 250;
+
 
                 //Maakt een checker patroon in de grid om de kamers net iets meer variatie te geven
                 if (y % 2 == 0 && x % 2 == 0 || y % 2 != 0 && x % 2 != 0) //Als allebei de x en y even zijn of als allebei de x en y oneven zijn maak ze zwart
                 {
-                    Tile.GetComponent<MeshRenderer>().material.color = Color.black;
+                    if (currentRoom != eindKamer)
+                    { 
+                        Tile.GetComponent<MeshRenderer>().material.color = Color.black;
+                    }
                 }
                 Tile.OriginalColor = Tile.GetComponent<MeshRenderer>().material.color;
 
@@ -92,6 +98,14 @@ public class GridManager : MonoBehaviour
                         Instantiate(possibleObject, Tile.transform, false);
                     }
                 }
+
+                foreach (GameObject alwaysObject in currentRoom.GetComponent<ObjectGenerator>().AlwaysObjects)
+                { 
+                        Instantiate(alwaysObject, Tile.transform, false);
+
+                }
+
+                // Tile.GetComponent<NavMeshSurface>().BuildNavMesh();
             }
        }
        Camera.transform.position = new Vector3((float)width / 2 -0.5f, 10, (float)height / 2 - 0.5f);
