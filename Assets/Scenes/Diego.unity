@@ -715,6 +715,16 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 2005532981}
+    - target: {fileID: 4055343044419177942, guid: 4854379b9babea14583cdac13f22da43,
+        type: 3}
+      propertyPath: despawnTimer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5553972961921098801, guid: 4854379b9babea14583cdac13f22da43,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9069573324191813142, guid: 4854379b9babea14583cdac13f22da43,
         type: 3}
       propertyPath: m_Name

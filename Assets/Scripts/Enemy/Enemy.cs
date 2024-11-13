@@ -73,9 +73,10 @@ public class Enemy : MonoBehaviour
             }
             else if (ID == 1)
             {
-                DisablePhysicsDrivenAnimation();
+                //DisablePhysicsDrivenAnimation();
+                enemyAnimator.SetTrigger("isDead");
                 agent.enabled = false;
-                enemyAnimator.enabled = false;
+                //enemyAnimator.enabled = false;
                 despawnTimer -= Time.deltaTime;
                 if (despawnTimer <= 0) Destroy(gameObject);
             }
