@@ -11,18 +11,37 @@ public class BombScript : MonoBehaviour
     [SerializeField] bool hasExploded = false;
     [SerializeField] float damage = 100;
     [SerializeField] GameObject particleEffect;
+
+    private bool isCountingDown = false;
+
     void Start()
     {
-        countDown = delay;
+        countDown = delay; // Initialize the countdown timer to the delay, but don't start counting down.
     }
+
     void Update()
     {
-        countDown -= Time.deltaTime;
-        if (countDown <= 0f && !hasExploded)
+        if (isCountingDown)
         {
-            Explode();
-            hasExploded = true;
+            countDown -= Time.deltaTime;
+            if (countDown <= 0f && !hasExploded)
+            {
+                Explode();
+                hasExploded = true;
+            }
         }
+    }
+
+    // Call this method to start the countdown
+    public void StartCountdown()
+    {
+        isCountingDown = true;
+    }
+
+    // Call this method to stop the countdown
+    public void StopCountdown()
+    {
+        isCountingDown = false;
     }
 
     private void Explode()
@@ -50,5 +69,4 @@ public class BombScript : MonoBehaviour
 
         Destroy(gameObject);
     }
-
 }

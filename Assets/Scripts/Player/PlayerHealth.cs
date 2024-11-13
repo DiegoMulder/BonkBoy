@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int currentHealth = 100;
-    public int maxHealth = 100;
+    public float currentHealth = 100;
+    public float maxHealth = 100;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,14 +19,19 @@ public class PlayerHealth : MonoBehaviour
         if(currentHealth > 0) HealthBehaviour();
     }
 
+    public void HealthAmuletGrab()
+    {
+        maxHealth *= 1.5f;
+    }
+
     public void IncreaseMaxHealth()
     {
-        maxHealth += 20;
+        maxHealth *= 1.05f;
     }
 
     public void IncreaseCurrentHealth()
     {
-        currentHealth += 50;
+        currentHealth = maxHealth / 100 * 25 + currentHealth;
     }
 
     //Player health functie

@@ -181,7 +181,7 @@ public class SettingsManager : MonoBehaviour
 
     public void SetTextureQuality(int level)
     {
-        QualitySettings.masterTextureLimit = level;
+        QualitySettings.globalTextureMipmapLimit = level;
         PlayerPrefs.SetInt("TextureQuality", level);
     }
 
