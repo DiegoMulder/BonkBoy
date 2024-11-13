@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class PotionScript : MonoBehaviour
 {
     PlayerHealth playerHealth;
-    public bool testMaxHealth = false;
+    private bool testMaxHealth = false;
     public bool testCurrentHealth = false;
 
     private void Start()
@@ -24,6 +25,11 @@ public class PotionScript : MonoBehaviour
 
     private void Update()
     {
+        if (OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger, OVRInput.Controller.RTouch))
+        {
+            Debug.Log("Right Trigger is pressed!");
+        }
+
         if (testMaxHealth)
         {
             UseMaxHealthPotion();
