@@ -1,3 +1,4 @@
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
@@ -26,7 +27,7 @@ public class GridManager : MonoBehaviour
                 GameObject currentRoom;
                 int[] Rotations = { 90, 180, 270 };
 
-                var Tile = Instantiate(_emptyTilePrefab, new Vector3(x, 0, y), Quaternion.identity);
+                var Tile = Instantiate(_emptyTilePrefab, new Vector3(x*5, 0, y*5), Quaternion.identity);
                 nodeArray[x, y] = Tile;
                 Tile.name = $"Tile {x} {y}"; //Dit is om de coords makkelijker te zien in de editor
 
@@ -65,7 +66,7 @@ public class GridManager : MonoBehaviour
                 Tile.GetComponent<MeshCollider>().sharedMesh = currentRoom.GetComponent<MeshCollider>().sharedMesh;
                 
 
-                Tile.transform.localScale = Vector3.one * 50;
+                Tile.transform.localScale = Vector3.one * 250;
 
                 //Maakt een checker patroon in de grid om de kamers net iets meer variatie te geven
                 if (y % 2 == 0 && x % 2 == 0 || y % 2 != 0 && x % 2 != 0) //Als allebei de x en y even zijn of als allebei de x en y oneven zijn maak ze zwart
