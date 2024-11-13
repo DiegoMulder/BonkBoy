@@ -53,6 +53,16 @@ public class PlayerSword : MonoBehaviour
         velocityDamageMultiplier *= 1.2f;
     }
 
+    public void DamagePotionGrab()
+    {
+        velocityDamageMultiplier *= 1.1f;
+    }
+
+    public void RemovePotionEffect()
+    {
+        velocityDamageMultiplier /= 1.1f;
+    }
+
     private void Update()
     {
         List<GameObject> enemiesToRemove = new List<GameObject>();
