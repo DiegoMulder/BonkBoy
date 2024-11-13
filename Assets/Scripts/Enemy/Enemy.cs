@@ -21,6 +21,10 @@ public class Enemy : MonoBehaviour
 
     private bool pullRandomPath = true;
 
+    FieldOfView script_FOV;
+
+    public int ID;
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -30,6 +34,7 @@ public class Enemy : MonoBehaviour
         hasDied = false;
         isHitted = false;
         enemyHP_Static = enemyHP;
+        script_FOV = gameObject.GetComponent<FieldOfView>();
     }
 
     private void Update()
@@ -56,20 +61,28 @@ public class Enemy : MonoBehaviour
         if (enemyHP <= 0)
         {
             hasDied = true;
-            DisablePhysicsDrivenAnimation();
 
-            if (Identity.ID_Static == 0)
-                Destroy(gameObject);
-            else if (Identity.ID_Static == 1)
+            if (ID == 0)
             {
+                enemyAnimator.SetTrigger("isDead");
                 agent.enabled = false;
-                enemyAnimator.enabled = false;
-                //GetComponent<Rigidbody>().isKinematic = false;
+                despawnTimer -= Time.deltaTime;
+
+                // Make sure the dissolve effect is applied to the instantiated material
+                if (despawnTimer <= 0) Destroy(gameObject);
+            }
+            else if (ID == 1)
+            {
+                //DisablePhysicsDrivenAnimation();
+                enemyAnimator.SetTrigger("isDead");
+                agent.enabled = false;
+                //enemyAnimator.enabled = false;
                 despawnTimer -= Time.deltaTime;
                 if (despawnTimer <= 0) Destroy(gameObject);
             }
         }
     }
+
 
     // Method to disable PhysicsDrivenAnimation on the GameObject and its children
     private void DisablePhysicsDrivenAnimation()
@@ -141,7 +154,7 @@ public class Enemy : MonoBehaviour
         enemyAttackRange = Vector3.Distance(agent.transform.position, player.position);
         agent.SetDestination(player.transform.position);
 
-        if (!FieldOfView.canSeePlayer && enemyAttackRange > stoppingDistance)
+        if (!script_FOV.canSeePlayer && enemyAttackRange > stoppingDistance)
         {
             agent.stoppingDistance = 0;
             currentState = EnemyState.Passive;
@@ -155,7 +168,7 @@ public class Enemy : MonoBehaviour
         {
             enemyAnimator.SetFloat("velocity", agent.velocity.magnitude);
 
-            if (enemyAttackRange < stoppingDistance && isRunning)
+            if (enemyAttackRange <= stoppingDistance && isRunning)
             {
                 enemyAnimator.SetBool("isAttacking", true);
                 SmoothRotateTowards(player.position);
@@ -186,7 +199,7 @@ public class Enemy : MonoBehaviour
 
         agent.speed = movementSpeed;
 
-        if (FieldOfView.canSeePlayer)
+        if (script_FOV.canSeePlayer)
         {
             agent.stoppingDistance = stoppingDistance;
             currentState = EnemyState.Chase;

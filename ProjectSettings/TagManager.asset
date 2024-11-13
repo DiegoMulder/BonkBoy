@@ -7,6 +7,7 @@ TagManager:
   - weapon
   - Enemy
   - Sword
+  - End
   layers:
   - Default
   - TransparentFX
