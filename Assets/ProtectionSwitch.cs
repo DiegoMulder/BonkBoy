@@ -9,6 +9,7 @@ public class ProtectionSwitch : MonoBehaviour
         if (collision.gameObject.CompareTag("Sword"))
         {
             protectionWalls.SetActive(false);
+            GameObject.Find("ProtectionWall").SetActive(false);
             gameObject.SetActive(false);
         }
     }
