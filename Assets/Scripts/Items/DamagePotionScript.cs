@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
-public class PotionScript : MonoBehaviour
+public class DamagePotionScript : MonoBehaviour
 {
-    PlayerHealth playerHealth;
-    private bool testMaxHealth = false;
-    public bool testCurrentHealth = false;
+    PlayerSword playerSword;
     public bool isSelected = false;
+    public bool testDamage = false;
     private InputDevice rightController;
+
+    public float potionDuration = 10.0f;
+    private bool potionActive = false;
+    private float potionTimer = 0f;
 
     private void Start()
     {
-        playerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHealth>();
+        playerSword = GameObject.FindGameObjectWithTag("Sword").GetComponent<PlayerSword>();
         var rightHandedControllers = new List<InputDevice>();
         InputDevices.GetDevicesAtXRNode(XRNode.RightHand, rightHandedControllers);
         if (rightHandedControllers.Count > 0)
@@ -31,14 +34,14 @@ public class PotionScript : MonoBehaviour
     {
         isSelected = false;
     }
-    public void UseMaxHealthPotion()
-    {
-        playerHealth.IncreaseMaxHealth();
-    }
 
-    public void UseCurrentHealthPotion()
+    public void UseDamagePotion()
     {
-        playerHealth.IncreaseCurrentHealth();
+        playerSword.DamagePotionGrab();
+        potionActive = true;
+        potionTimer = potionDuration;
+        gameObject.GetComponent<Renderer>().enabled = false;
+        gameObject.GetComponent<Collider>().enabled = false;
     }
 
     private void Update()
@@ -47,34 +50,41 @@ public class PotionScript : MonoBehaviour
         {
             var rightHandedControllers = new List<InputDevice>();
             InputDevices.GetDevicesAtXRNode(XRNode.RightHand, rightHandedControllers);
-
             if (rightHandedControllers.Count > 0)
             {
                 rightController = rightHandedControllers[0];
             }
         }
 
-        if (rightController.isValid && isSelected == true)
+        if (rightController.isValid && isSelected)
         {
             bool triggerPressed;
             if (rightController.TryGetFeatureValue(CommonUsages.triggerButton, out triggerPressed) && triggerPressed)
             {
-                Debug.Log("Right Trigger is pressed!");
-                testCurrentHealth = true;
+                testDamage = true;
             }
         }
 
-        if (testMaxHealth)
+        if (testDamage && !potionActive)
         {
-            UseMaxHealthPotion();
-            testMaxHealth = false;
+            UseDamagePotion();
+            testDamage = false;
         }
 
-        if (testCurrentHealth)
+        if (potionActive)
         {
-            UseCurrentHealthPotion();
-            Destroy(gameObject);
-            testCurrentHealth = false;
+            potionTimer -= Time.deltaTime;
+            if (potionTimer <= 0)
+            {
+                EndPotionEffect();
+            }
         }
+    }
+
+    private void EndPotionEffect()
+    {
+        playerSword.RemovePotionEffect();
+        potionActive = false;
+        Destroy(gameObject); 
     }
 }
