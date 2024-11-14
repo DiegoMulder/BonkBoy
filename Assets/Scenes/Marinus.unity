@@ -3857,7 +3857,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1208163799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6875,14 +6875,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 8630718929651323723}
-    - targetCorrespondingSourceObject: {fileID: 4762854282331132185, guid: 32cfff93170516d449441c746e06c54f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8630718929651323724}
-    - targetCorrespondingSourceObject: {fileID: 4762854282331132185, guid: 32cfff93170516d449441c746e06c54f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8630718929651323730}
   m_SourcePrefab: {fileID: 100100000, guid: 32cfff93170516d449441c746e06c54f, type: 3}
 --- !u!1001 &6070091061901750339
 PrefabInstance:
@@ -7249,39 +7241,6 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: -0.0050000004}
   m_TimeToStationary: 0.5
---- !u!114 &8630718929651323724
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8630718929651323715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f395b89cf9d79447ae8cd5ad3bfeafc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!65 &8630718929651323730
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8630718929651323715}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.019999998, y: 0.019999996, z: 0.010927827}
-  m_Center: {x: 0, y: 3.2250985e-17, z: -0.004538922}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

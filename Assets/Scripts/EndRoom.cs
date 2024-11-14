@@ -8,8 +8,8 @@ public class EndRoom : MonoBehaviour
     // Start is called before the first frame update
     void Start() => theEnd = false;
 
-	private void OnCollisionEnter(Collision collision)
+	private void OnTriggerEnter(Collider other)
 	{
-		if(collision.gameObject.CompareTag("Player")) theEnd = true;
+		if (other.gameObject.CompareTag("Player")) theEnd = true;
 	}
 }
