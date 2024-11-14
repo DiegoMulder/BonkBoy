@@ -4,17 +4,5 @@ using UnityEngine.UI;
 
 public class SceneLoader : MonoBehaviour
 {
-    [SerializeField] private string sceneName;
-
-    public void LoadScene()
-    {
-        if (!string.IsNullOrEmpty(sceneName))
-        {
-            SceneManager.LoadScene(sceneName);
-        }
-        else
-        {
-            Debug.LogWarning("no scene haha");
-        }
-    }
+    public void LoadScene(int ID) => SceneManager.LoadScene(ID);
 }

@@ -7,10 +7,11 @@ public class PlayerHealth : MonoBehaviour
 {
     public float currentHealth = 100;
     public float maxHealth = 100;
+    public static bool isDead;
     // Start is called before the first frame update
     void Start()
     {
-        
+        isDead = false;
     }
 
     // Update is called once per frame
@@ -42,7 +43,8 @@ public class PlayerHealth : MonoBehaviour
 
         if(currentHealth <= 0)
 		{
-            print("You Died!");
+            isDead = true;
+            print("You Died!" + isDead);
             currentHealth = 0;
 		}
     }
