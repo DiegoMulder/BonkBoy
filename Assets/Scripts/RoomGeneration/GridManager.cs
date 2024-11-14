@@ -1,14 +1,12 @@
-using Unity.AI.Navigation;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.Tilemaps;
 
 public class GridManager : MonoBehaviour
 {
     [SerializeField] Node _emptyTilePrefab;
     [SerializeField] int height = 9, width = 16;
 
-    [SerializeField] GameObject[] RoomList; 
+    [SerializeField] GameObject[] RoomList;
 
     [SerializeField] Transform Camera; // de transform van de camera
 
@@ -21,18 +19,17 @@ public class GridManager : MonoBehaviour
 
     public Node[,] GenerateGrid(int width, int height)
     {
-       Node[,] nodeArray = new Node[width, height];
-       for (int y = 0; y < height; y++) 
-       {
+        Node[,] nodeArray = new Node[width, height];
+        for (int y = 0; y < height; y++)
+        {
             for (int x = 0; x < width; x++)
             {
                 GameObject currentRoom;
                 int[] Rotations = { 90, 180, 270 };
 
-                var Tile = Instantiate(_emptyTilePrefab, new Vector3(x*5, 0, y*5), Quaternion.identity);
+                var Tile = Instantiate(_emptyTilePrefab, new Vector3(x * 5, 0, y * 5), Quaternion.identity);
                 nodeArray[x, y] = Tile;
                 Tile.name = $"Tile {x} {y}"; //Dit is om de coords makkelijker te zien in de editor
-
 
                 //Zorgt ervoor dat de kamers aan de rand van de map allemaal een doodlopende kamer worden
                 if (x == this.width - 1 || y == this.height - 1 || y == 0 || x == 0)
@@ -40,42 +37,41 @@ public class GridManager : MonoBehaviour
                     currentRoom = RoomList[2];
                     Tile.transform.Rotate(-90, 0, Rotations[Random.Range(0, Rotations.Length)]);
 
-                    if (Random.value < 0.2 && eindkamerCount == 0 || x == this.width -2 && y == this.height -2 && eindkamerCount == 0)
-                    {//maakt een willekeurige kamer aan de rand van de map de eindkamer en als er geen willekuerige kamer is gekozen
-                     // dan wordt de laatste kamer de eindkamer
+                    if (Random.value < 0.1 && eindkamerCount == 0 || x == this.width - 2 && y == this.height - 2 && eindkamerCount == 0)
+                    {   //Maakt een willekeurige kamer aan de rand van de map de eindkamer en als er geen willekuerige kamer is gekozen
+                        //Dan wordt dat de laatste kamer de eindkamer
                         currentRoom = eindKamer;
+                        Tile.name = "EndRoom";
                         eindkamerCount++;
                     }
                 }
                 else
                 { // maakt de rotatie van alle kamers die niet kamer 3 zijn een klein beetje meer willekuerig
                     currentRoom = RoomList[Random.Range(0, RoomList.Length - 1)];
-                    Tile.transform.Rotate(-90,0,0);
+                    Tile.transform.Rotate(-90, 0, 0);
                 }
+
                 if (y == this.height)
                 {
                     Tile.transform.Rotate(-90, 0, Rotations[Random.Range(0, 1)]);
                 }
 
                 if (x == 8 && y == 4)
-                { 
+                {
                     currentRoom = startKamer;
                 }
-
 
                 Tile.GetComponent<MeshFilter>().mesh = currentRoom.GetComponent<MeshFilter>().mesh;
                 Tile.GetComponent<MeshRenderer>().materials = currentRoom.GetComponent<MeshRenderer>().materials;
                 Tile.GetComponent<MeshCollider>().sharedMesh = currentRoom.GetComponent<MeshCollider>().sharedMesh;
-                
-                
-                Tile.transform.localScale = Vector3.one * 250;
 
+                Tile.transform.localScale = Vector3.one * 250;
 
                 //Maakt een checker patroon in de grid om de kamers net iets meer variatie te geven
                 if (y % 2 == 0 && x % 2 == 0 || y % 2 != 0 && x % 2 != 0) //Als allebei de x en y even zijn of als allebei de x en y oneven zijn maak ze zwart
                 {
                     if (currentRoom != eindKamer)
-                    { 
+                    {
                         Tile.GetComponent<MeshRenderer>().material.color = Color.black;
                     }
                 }
@@ -94,27 +90,48 @@ public class GridManager : MonoBehaviour
                 if (currentRoom == startKamer)
                 {
                     foreach (GameObject possibleObject in objectsPossible)
-                    { 
+                    {
                         Instantiate(possibleObject, Tile.transform, false);
                     }
                 }
 
                 foreach (GameObject alwaysObject in currentRoom.GetComponent<ObjectGenerator>().AlwaysObjects)
-                { 
-                        Instantiate(alwaysObject, Tile.transform, false);
-
+                {
+                    Instantiate(alwaysObject, Tile.transform, false);
                 }
-
-                // Tile.GetComponent<NavMeshSurface>().BuildNavMesh();
             }
-       }
-       Camera.transform.position = new Vector3((float)width / 2 -0.5f, 10, (float)height / 2 - 0.5f);
-
-       return nodeArray;
+        }
+        //gaat opnieuw door alle kamers heen en zet vervolgen alle kamers naast de eindkamer naar een kruispunt kamer
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                GameObject currentRoom = GameObject.Find($"Tile {x} {y}");
+                if (y > 0 && nodeArray[x, y - 1].name == eindKamer.name || x > 0 && nodeArray[x - 1, y].name == eindKamer.name || x < this.width - 1 && nodeArray[x + 1, y].name == eindKamer.name || y < this.height - 1 && nodeArray[x, y + 1].name == eindKamer.name)
+                {
+                    //als de kamer een links een rechts een onder of een boven de eindkamer zit maak er een kruispunt van
+                    currentRoom.GetComponent<MeshFilter>().mesh = RoomList[1].GetComponent<MeshFilter>().mesh;
+                    currentRoom.GetComponent<MeshRenderer>().materials = RoomList[1].GetComponent<MeshRenderer>().materials;
+                    currentRoom.GetComponent<MeshCollider>().sharedMesh = RoomList[1].GetComponent<MeshCollider>().sharedMesh;
+                }
+            }
+        }
+        return nodeArray;
     }
 
     private void Start()
     {
         GenerateGrid(width, height);
+        DisableOldRooms();
+    }
+
+    private void DisableOldRooms()
+    {
+        foreach (var room in RoomList)
+        {
+            room.gameObject.SetActive(false); 
+        }
+        startKamer.SetActive(false);
+        eindKamer.SetActive(false);
     }
 }
