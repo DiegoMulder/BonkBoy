@@ -25,6 +25,8 @@ public class Enemy : MonoBehaviour
 
     public int ID;
 
+    private float playerDistance;
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -39,7 +41,8 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if (!hasDied)
+        playerDistance = Vector3.Distance(player.position, gameObject.transform.position);
+        if (!hasDied && playerDistance <= 5)
         {
             EnemyBehaviour();
             MovementLogic();

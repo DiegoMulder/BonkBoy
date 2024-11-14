@@ -35,12 +35,14 @@ public class SnowStorm : MonoBehaviour
 			{
                 foreach(GameObject go in snowStorms) go.SetActive(false);
                 if(snowStorms[0].active == false) snowStorms[0].SetActive(true);
+                if(stormSound1.isPlaying == false) stormSound1.Play();
+                stormSound1.volume = 0.2f;
                 stormSound2.Stop();
             }
             else if(stormLevel == 1)
 			{
                 foreach (GameObject go in snowStorms) go.SetActive(false);
-                stormSound1.Play();
+                stormSound1.volume = 1;
                 snowStorms[1].SetActive(true);
             }
             else if(stormLevel == 2)
